@@ -1,0 +1,40 @@
+<!--
+  ShowAroo — Blogger theme integration snippet (Phase 0).
+  1. Theme -> Edit HTML.
+  2. Paste the preconnect/style links inside <head>.
+  3. Paste the env config + module bootstrap just before </body>.
+  4. Replace setyuth, the version tag, and the TMDB credential.
+  Source modules are served from a version-pinned CDN; Blogger hosts only this thin layer.
+  A browser-side TMDB key is inherently public: use a read-only key.
+-->
+
+<!-- ===== inside <head> ===== -->
+<link rel="preconnect" href="https://image.tmdb.org" crossorigin="anonymous"/>
+<link rel="preconnect" href="https://api.themoviedb.org" crossorigin="anonymous"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/setyuth/ShowarooWeb@v0.0.0/src/styles/reset.css"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/setyuth/ShowarooWeb@v0.0.0/src/styles/tokens.css"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/setyuth/ShowarooWeb@v0.0.0/src/components/Image/lazyimg.css"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/setyuth/ShowarooWeb@v0.0.0/src/styles/motion.css"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/setyuth/ShowarooWeb@v0.0.0/src/styles/base.css"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/setyuth/ShowarooWeb@v0.0.0/src/styles/layout.css"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/setyuth/ShowarooWeb@v0.0.0/src/components/components.css"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/setyuth/ShowarooWeb@v0.0.0/src/styles/pages/home.css"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/setyuth/ShowarooWeb@v0.0.0/src/styles/pages/search.css"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/setyuth/ShowarooWeb@v0.0.0/src/styles/pages/detail.css"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/setyuth/ShowarooWeb@v0.0.0/src/styles/pages/watch.css"/>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/setyuth/ShowarooWeb@v0.0.0/src/styles/pages/library.css"/>
+
+<!-- ===== app mount point in <body> ===== -->
+<div id="showaroo-app"></div>
+
+<!-- ===== just before </body> ===== -->
+<script>
+  window.__SHOWAROO_ENV__ = {
+    mode: 'production',
+    debug: false,
+    tmdbApiKey: 'REPLACE_WITH_PUBLIC_TMDB_KEY',
+    tmdbAccessToken: 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIxZWZlNDk2ZjZmYTdiZGMzNzI5YmM1NThjNjMwZGI0MyIsIm5iZiI6MTc2OTA1MzExNy4zNjQsInN1YiI6IjY5NzE5YmJkYzYzNmQ0YzQyMDkxYTY4MSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.dmT-2IhAwEhqa3V6k13ZAeAtdOYsXOE1dI3Q7onpmUI',
+    cdnBaseUrl: 'https://cdn.jsdelivr.net/gh/setyuth/ShowarooWeb@v0.0.0'
+  };
+</script>
+<script type="module" src="https://cdn.jsdelivr.net/gh/setyuth/ShowarooWeb@v0.0.0/src/main.js"></script>
