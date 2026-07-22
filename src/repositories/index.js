@@ -1,15 +1,17 @@
 /**
- * @file Repository barrel + a factory that wires all repositories to one
- * TmdbService instance. The app resolves repositories from the container.
+ * @file Repository barrel + factory. One place assembles all repositories over a
+ * single TmdbService, so the container registers them together.
  */
 
 import { MovieRepository } from './MovieRepository.js';
 import { TvRepository } from './TvRepository.js';
 import { PersonRepository } from './PersonRepository.js';
-import { CollectionRepository, CompanyRepository, NetworkRepository } from './CollectionRepository.js';
+import { CollectionRepository } from './CollectionRepository.js';
+import { CompanyRepository } from './CompanyRepository.js';
+import { NetworkRepository } from './NetworkRepository.js';
 import { SearchRepository } from './SearchRepository.js';
 
-export { MovieRepository, TvRepository, PersonRepository, CollectionRepository, CompanyRepository, NetworkRepository, SearchRepository };
+export { toCardModel } from './mappers.js';
 
 /**
  * @param {import('../services/tmdb/TmdbService.js').TmdbService} tmdb
