@@ -8,6 +8,13 @@
   A browser-side TMDB key is inherently public: use a read-only key.
 -->
 
+<!-- SEO baseline (inside <head>, before the module) -->
+<meta name="description" content="ShowAroo — discover movies and TV shows."/>
+<meta property="og:site_name" content="ShowAroo"/>
+<meta property="og:type" content="website"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<link rel="canonical" href="https://showaroo.blogspot.com/"/>
+
 <!-- ===== inside <head> ===== -->
 <link rel="preconnect" href="https://image.tmdb.org" crossorigin="anonymous"/>
 <link rel="preconnect" href="https://api.themoviedb.org" crossorigin="anonymous"/>
@@ -36,5 +43,13 @@
     tmdbAccessToken: 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiIxZWZlNDk2ZjZmYTdiZGMzNzI5YmM1NThjNjMwZGI0MyIsIm5iZiI6MTc2OTA1MzExNy4zNjQsInN1YiI6IjY5NzE5YmJkYzYzNmQ0YzQyMDkxYTY4MSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.dmT-2IhAwEhqa3V6k13ZAeAtdOYsXOE1dI3Q7onpmUI',
     cdnBaseUrl: 'https://cdn.jsdelivr.net/gh/setyuth/ShowarooWeb@v0.0.0'
   };
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org", "@type": "WebSite", "name": "ShowAroo",
+  "url": "https://showaroo.blogspot.com/",
+  "potentialAction": { "@type": "SearchAction",
+    "target": "https://showaroo.blogspot.com/#/search?q={query}", "query-input": "required name=query" }
+}
 </script>
 <script type="module" src="https://cdn.jsdelivr.net/gh/setyuth/ShowarooWeb@v0.0.0/src/main.js"></script>

@@ -1,0 +1,133 @@
+/*
+ * tokens.css — ShowAroo Design Tokens (Phase 2)
+ * Source of truth: DESIGN_SYSTEM.md. Components consume SEMANTIC tokens only.
+ */
+
+:root {
+  /* =========================================================
+   * PRIMITIVES — raw values. Do not consume directly in components.
+   * ========================================================= */
+
+  /* Palette: backgrounds */
+  --palette-bg-900: #090909;
+  --palette-bg-800: #141414;
+  --palette-surface-700: #1c1c1c;
+  --palette-surface-600: #252525;
+
+  /* Palette: brand */
+  --palette-primary: #e50914;
+  --palette-secondary: #1f80ff;
+  --palette-accent: #00c2ff;
+  --palette-success: #22c55e;
+  --palette-warning: #f59e0b;
+  --palette-danger: #ef4444;
+
+  /* Palette: neutrals / text */
+  --palette-white: #ffffff;
+  --palette-gray-300: #d1d5db;
+  --palette-gray-400: #9ca3af;
+  --palette-gray-500: #6b7280;
+
+  /* Spacing scale — strict 8px grid (4 is the only sub-step). */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 16px;
+  --space-4: 24px;
+  --space-5: 32px;
+  --space-6: 40px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 80px;
+
+  /* Radius scale */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 20px;
+  --radius-pill: 999px;
+  --radius-circle: 50%;
+
+  /* Type scale — fluid where useful, fixed where control matters. */
+  --font-family-base: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-size-display: clamp(2.5rem, 6vw, 4rem);
+  --font-size-h1: clamp(2rem, 4vw, 3rem);
+  --font-size-h2: clamp(1.5rem, 3vw, 2.25rem);
+  --font-size-h3: 1.5rem;
+  --font-size-h4: 1.25rem;
+  --font-size-body-lg: 1.125rem;
+  --font-size-body: 1rem;
+  --font-size-sm: 0.875rem;
+  --font-size-caption: 0.75rem;
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --line-height-tight: 1.2;   /* headings */
+  --line-height-body: 1.5;    /* body (within DS 1.4–1.6) */
+  --measure: 66ch;            /* max line length for readability */
+
+  /* Motion — consistent durations + easing. */
+  --duration-fast: 120ms;
+  --duration-base: 200ms;
+  --duration-slow: 320ms;
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-emphasized: cubic-bezier(0.2, 0, 0, 1);
+
+  /* Z-index scale — named layers to avoid arbitrary stacking. */
+  --z-base: 0;
+  --z-header: 100;
+  --z-dropdown: 200;
+  --z-modal: 300;
+  --z-toast: 400;
+
+  /* =========================================================
+   * SEMANTIC TOKENS — components consume THESE only.
+   * ========================================================= */
+
+  /* Backgrounds & surfaces (elevation-linked) */
+  --color-bg: var(--palette-bg-900);
+  --color-bg-alt: var(--palette-bg-800);
+  --surface-1: var(--palette-surface-700);
+  --surface-2: var(--palette-surface-600);
+  --overlay: rgba(0, 0, 0, 0.65);
+
+  /* Brand roles */
+  --color-primary: var(--palette-primary);
+  --color-secondary: var(--palette-secondary);
+  --color-accent: var(--palette-accent);
+  --color-success: var(--palette-success);
+  --color-warning: var(--palette-warning);
+  --color-danger: var(--palette-danger);
+
+  /* Text roles */
+  --color-text: var(--palette-white);
+  --color-text-secondary: var(--palette-gray-300);
+  --color-text-muted: var(--palette-gray-400);
+  --color-text-disabled: var(--palette-gray-500);
+
+  /* Focus ring (a11y) */
+  --focus-ring: var(--color-accent);
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+
+  /* Elevation → shadow mapping (soft shadows only, per DS §8). */
+  --elevation-0: none;
+  --elevation-1: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --elevation-2: 0 2px 8px rgba(0, 0, 0, 0.45);
+  --elevation-3: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --elevation-4: 0 16px 40px rgba(0, 0, 0, 0.55);
+}
+
+/*
+ * Reduced-motion: neutralize motion tokens at the source so every component
+ * that respects the tokens inherits the behavior for free (DS §21).
+ */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0.01ms;
+    --duration-base: 0.01ms;
+    --duration-slow: 0.01ms;
+  }
+}

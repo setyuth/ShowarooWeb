@@ -1,0 +1,22 @@
+/* LazyImage: aspect-ratio box, blur-up placeholder, crossfade. Token-driven. */
+.lazyimg { position: relative; overflow: hidden; background: var(--surface-2); width: 100%; }
+.lazyimg__ph, .lazyimg__full {
+  position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
+}
+.lazyimg__ph {
+  filter: blur(16px); transform: scale(1.1); /* hide blur edges */
+}
+.lazyimg__full {
+  opacity: 0; transition: opacity var(--duration-base) var(--ease-standard);
+}
+.lazyimg[data-loaded='true'] .lazyimg__full { opacity: 1; }
+.lazyimg[data-loaded='true'] .lazyimg__ph { opacity: 0; transition: opacity var(--duration-base) var(--ease-standard); }
+.lazyimg--empty { background:
+  linear-gradient(135deg, var(--surface-1), var(--surface-2)); }
+.lazyimg--error::after {
+  content: ''; position: absolute; inset: 0;
+  background: var(--surface-1);
+}
+@media (prefers-reduced-motion: reduce) {
+  .lazyimg__full, .lazyimg[data-loaded='true'] .lazyimg__ph { transition: none; }
+}

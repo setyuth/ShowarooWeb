@@ -1,0 +1,30 @@
+/* Homepage: hero + rails. Token-driven, responsive, reduced-motion safe. */
+.home__hero { margin-bottom: var(--space-6); }
+
+.hero { position: relative; min-height: 60vh; display: flex; align-items: flex-end; overflow: hidden; border-radius: 0 0 var(--radius-xl) var(--radius-xl); }
+.hero__backdrop { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.hero__scrim { position: absolute; inset: 0; background:
+  linear-gradient(to top, var(--color-bg) 4%, transparent 55%),
+  linear-gradient(to right, rgba(0,0,0,.75), transparent 60%); }
+.hero__content { position: relative; padding-block: var(--space-7); max-width: 720px; }
+.hero__logo { max-width: 60%; max-height: 160px; margin-bottom: var(--space-3); }
+.hero__title { font-size: var(--font-size-display); line-height: var(--line-height-tight); }
+.hero__meta { color: var(--color-text-secondary); margin-top: var(--space-2); }
+.hero__overview { color: var(--color-text-secondary); margin-top: var(--space-3); }
+.hero__actions { display: flex; gap: var(--space-3); margin-top: var(--space-4); flex-wrap: wrap; }
+
+.rail { margin-bottom: var(--space-6); }
+.rail__head { margin-bottom: var(--space-3); }
+.rail__title { font-size: var(--font-size-h3); }
+.rail__track {
+  display: flex; gap: var(--space-3); overflow-x: auto; scroll-snap-type: x mandatory;
+  padding-inline: var(--space-3); padding-bottom: var(--space-2);
+  scrollbar-width: thin;
+}
+.rail__track:focus-visible { outline: var(--focus-ring-width) solid var(--focus-ring); outline-offset: var(--focus-ring-offset); }
+.rail__item { flex: 0 0 auto; width: 160px; scroll-snap-align: start; }
+.rail--skeleton { display: flex; gap: var(--space-3); }
+.rail-empty, .section-error { color: var(--color-text-muted); padding: var(--space-4); }
+.section-error { display: flex; align-items: center; gap: var(--space-3); }
+
+@media (min-width: 1024px) { .rail__item { width: 200px; } }

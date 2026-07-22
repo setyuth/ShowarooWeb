@@ -1,0 +1,23 @@
+/* Search: header dropdown + full results page. Token-driven, accessible. */
+.app-header__search { position: relative; }
+.search-suggest {
+  position: absolute; top: calc(100% + var(--space-2)); inset-inline: 0;
+  background: var(--surface-1); border: 1px solid var(--surface-2);
+  border-radius: var(--radius-md); box-shadow: var(--elevation-3);
+  z-index: var(--z-dropdown); max-height: 60vh; overflow-y: auto; padding: var(--space-1);
+}
+.search-suggest__opt {
+  display: flex; align-items: center; gap: var(--space-3);
+  padding: var(--space-2) var(--space-3); border-radius: var(--radius-sm); cursor: pointer;
+}
+.search-suggest__opt[aria-selected='true'], .search-suggest__opt:hover { background: var(--surface-2); }
+.search-suggest__thumb { width: 34px; height: 51px; object-fit: cover; border-radius: var(--radius-sm); }
+.search-suggest__msg { padding: var(--space-3); color: var(--color-text-muted); }
+
+.search-page__title { font-size: var(--font-size-h2); margin-bottom: var(--space-4); }
+.search-page__empty { color: var(--color-text-muted); padding: var(--space-6) 0; }
+
+@media (max-width: 639px) {
+  /* On mobile the dropdown becomes a full-width sheet under the sticky header. */
+  .search-suggest { position: fixed; inset-inline: var(--space-3); top: calc(var(--space-8) + var(--space-2)); }
+}

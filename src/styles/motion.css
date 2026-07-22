@@ -1,0 +1,35 @@
+/*
+ * motion.css — shared motion utilities. Compositor-only properties. Durations
+ * and easings are Phase 2 tokens (auto-zeroed under prefers-reduced-motion).
+ */
+
+/* Enter animations (applied on mount; removed after they run). */
+.enter-fade { animation: mo-fade var(--duration-base) var(--ease-standard) both; }
+.enter-rise { animation: mo-rise var(--duration-slow) var(--ease-emphasized) both; }
+.enter-scale { animation: mo-scale var(--duration-base) var(--ease-emphasized) both; }
+
+@keyframes mo-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes mo-rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+@keyframes mo-scale { from { opacity: 0; transform: scale(.96); } to { opacity: 1; transform: none; } }
+
+/* Staggered children (rails, grids): incremental delay via custom property. */
+.stagger > * { animation: mo-rise var(--duration-slow) var(--ease-emphasized) both; animation-delay: calc(var(--i, 0) * 40ms); }
+
+/* Route transition fallback (used when View Transitions API is absent). */
+.route-fade-out { animation: mo-fade var(--duration-fast) var(--ease-standard) reverse both; }
+.route-fade-in { animation: mo-fade var(--duration-base) var(--ease-standard) both; }
+
+/* Press micro-interaction for interactive surfaces. */
+.press { transition: transform var(--duration-fast) var(--ease-standard); }
+.press:active { transform: scale(.97); }
+
+/* View Transitions API: keep it subtle + fast; tokens govern feel. */
+::view-transition-old(root), ::view-transition-new(root) {
+  animation-duration: var(--duration-base);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .enter-fade, .enter-rise, .enter-scale, .stagger > *,
+  .route-fade-out, .route-fade-in { animation: none !important; }
+  .press:active { transform: none; }
+}

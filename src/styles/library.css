@@ -1,0 +1,9 @@
+/* Library pages: Favorites / Watch Later / History share this. */
+.library { padding-block: var(--space-5); }
+.library__header { display: flex; align-items: baseline; gap: var(--space-3); margin-bottom: var(--space-4); }
+.library__title { font-size: var(--font-size-h2); }
+.library__count { color: var(--color-text-muted); font-size: var(--font-size-body-lg); }
+.library__empty {
+  display: flex; flex-direction: column; align-items: center; gap: var(--space-4);
+  padding: var(--space-9) var(--space-4); text-align: center; color: var(--color-text-secondary);
+}
