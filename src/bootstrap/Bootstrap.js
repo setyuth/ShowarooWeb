@@ -31,7 +31,7 @@ import { ContinueWatching } from '../player/ContinueWatching.js';
 import { WatchPage } from '../player/WatchPage.js';
 import { HeadManager } from '../seo/HeadManager.js';
 
-import { Router, AppShell, Header } from '../layout/index.js';
+import { Router, AppShell } from '../layout/index.js';
 import { HomePage } from '../pages/home/HomePage.js';
 import { SearchPage } from '../search/SearchPage.js';
 import { MovieDetailPage } from '../pages/detail/MovieDetailPage.js';
@@ -195,11 +195,6 @@ export class Bootstrap {
       onSearch: (query) => router.navigate(`/search?q=${encodeURIComponent(query)}`),
     });
     shell.mount(this.#container.resolve('mount'));
-    // Reflect the active route in the header nav (best-effort; header is nested in the shell).
-    bus.on('route:change', ({ path }) => {
-      const header = shell.el?.querySelector('.app-header');
-      if (header) Header.prototype.setActive?.call({ el: header }, path);
-    });
 
     this.#container.register('router', router);
     this.#container.register('shell', shell);
