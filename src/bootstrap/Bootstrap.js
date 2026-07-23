@@ -219,10 +219,29 @@ export class Bootstrap {
         errors,
         () => mountPage(page, title),
       );
-      outlet.replaceChildren(doRender());
-      head.apply({ title });
-      window.scrollTo({ top: 0 });
-      document.getElementById('main')?.focus();
+
+      const swap = () => {
+        outlet.replaceChildren(doRender());
+        head.apply({ title });
+        window.scrollTo({ top: 0 });
+        document.getElementById('main')?.focus();
+      };
+
+      // Prefer the native View Transitions API for a smooth cross-fade between
+      // routes; fall back to the enter/exit classes from motion.css on browsers
+      // that lack it. Both paths honor prefers-reduced-motion automatically
+      // (native via the UA, fallback via the @media block in motion.css).
+      if (document.startViewTransition) {
+        document.startViewTransition(swap);
+      } else {
+        outlet.classList.add('route-fade-out');
+        window.setTimeout(() => {
+          outlet.classList.remove('route-fade-out');
+          swap();
+          outlet.classList.add('route-fade-in');
+          window.setTimeout(() => outlet.classList.remove('route-fade-in'), 260);
+        }, 90);
+      }
     };
 
     router.on('/', () =>

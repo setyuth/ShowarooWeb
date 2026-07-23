@@ -68,8 +68,9 @@ export class BrowsePage extends Page {
 
     /** @param {any[]} list */
     const appendItems = (list) => {
-      for (const item of list) {
-        const wrap = createElement('div');
+      list.forEach((item, i) => {
+        const wrap = createElement('div', { className: 'stagger' });
+        wrap.style.setProperty('--i', String(Math.min(grid.children.length + i, 24)));
         new MediaCard({
           model: {
             ...item,
@@ -81,7 +82,7 @@ export class BrowsePage extends Page {
           onToggleWatchLater: () => this.#deps.state.toggleWatchLater(this.#toRef(item)),
         }).mount(wrap);
         grid.append(wrap);
-      }
+      });
     };
 
     const renderLoadMore = () => {
