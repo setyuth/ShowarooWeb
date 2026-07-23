@@ -39,6 +39,7 @@ import { DiscoverPage } from '../pages/discover/DiscoverPage.js';
 import { SearchPage } from '../search/SearchPage.js';
 import { MovieDetailPage } from '../pages/detail/MovieDetailPage.js';
 import { TvDetailPage } from '../pages/detail/TvDetailPage.js';
+import { SeasonDetailPage } from '../pages/detail/SeasonDetailPage.js';
 import { PersonDetailPage } from '../pages/detail/PersonDetailPage.js';
 import {
   CollectionDetailPage, CompanyDetailPage, NetworkDetailPage,
@@ -262,6 +263,8 @@ export class Bootstrap {
       mountPage(new MovieDetailPage({ movie: repos.movie, state, router }, params.id), 'Movie'));
     router.on('/tv/:id', ({ params }) =>
       mountPage(new TvDetailPage({ tv: repos.tv, state, router }, params.id), 'TV Show'));
+    router.on('/tv/:id/season/:season', ({ params }) =>
+      mountPage(new SeasonDetailPage({ tv: repos.tv, router }, params.id, params.season), 'Season'));
     router.on('/person/:id', ({ params }) =>
       mountPage(new PersonDetailPage({ person: repos.person, state, router }, params.id), 'Person'));
     router.on('/collection/:id', ({ params }) =>

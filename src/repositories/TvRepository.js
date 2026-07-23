@@ -1,7 +1,7 @@
 /** @file TV show data access. Mirrors MovieRepository for TV endpoints. */
 
 import { BaseRepository } from './BaseRepository.js';
-import { toCardPage, toTvDetail } from './mappers.js';
+import { toCardPage, toTvDetail, toSeasonDetail } from './mappers.js';
 
 export class TvRepository extends BaseRepository {
   /** @param {number} [page] */
@@ -32,7 +32,15 @@ export class TvRepository extends BaseRepository {
   /** @param {string|number} id */
   detail(id) {
     return this.fetchMapped(`/tv/${id}`, (r) => toTvDetail(r, this.images),
-      { params: { append_to_response: 'credits,videos,images,recommendations' }, ttl: this.ttl.long });
+      { params: { append_to_response: 'credits,videos,images,recommendations,watch/providers' }, ttl: this.ttl.long });
+  }
+  /**
+   * A single season's episode list.
+   * @param {string|number} tvId @param {number} seasonNumber
+   */
+  season(tvId, seasonNumber) {
+    return this.fetchMapped(`/tv/${tvId}/season/${seasonNumber}`, (r) => toSeasonDetail(r, this.images),
+      { ttl: this.ttl.long });
   }
   /** @param {string|number} id @param {number} [page] */
   similar(id, page = 1) {

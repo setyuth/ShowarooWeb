@@ -16,6 +16,7 @@ export class TvDetailPage extends DetailPage {
   renderBody(m) {
     const body = createElement('div');
     body.append(this.#seasons(m));
+    body.append(this.watchProvidersSection(m.watchProviders));
     body.append(this.castSection(m.cast));
     body.append(this.videosSection(m.videos));
     body.append(this.recommendationsSection('More Like This', m.recommendations));
@@ -29,10 +30,13 @@ export class TvDetailPage extends DetailPage {
     section.append(createElement('h2', { className: 'detail__section-title', text: `Seasons (${m.numberOfSeasons})` }));
     const track = createElement('div', { className: 'detail__season-track', attrs: { role: 'list' } });
     for (const s of m.seasons) {
-      const card = createElement('div', { className: 'detail__season-card', attrs: { role: 'listitem' } });
+      const card = createElement('div', { className: 'detail__season-card', attrs: { role: 'button', tabindex: '0' } });
       if (s.posterUrl) card.append(createElement('img', { className: 'detail__season-poster', attrs: { src: s.posterUrl, alt: s.name, loading: 'lazy' } }));
       card.append(createElement('span', { className: 'detail__season-name', text: s.name }));
       card.append(createElement('span', { className: 'detail__season-count', text: `${s.episodeCount} episodes` }));
+      const open = () => this.detailDeps.router.navigate(`/tv/${this.id}/season/${s.number}`);
+      this.on(card, 'click', open);
+      this.on(card, 'keydown', (e) => { const k = /** @type {KeyboardEvent} */ (e).key; if (k === 'Enter' || k === ' ') { e.preventDefault(); open(); } });
       track.append(card);
     }
     section.append(track);

@@ -4,6 +4,7 @@
  */
 
 import { formatYear, formatRating, formatRuntime } from '../utils/format.js';
+import { TMDB } from '../config/index.js';
 
 /**
  * @typedef {import('../components/Card/MediaCard.js').MediaCardModel} MediaCardModel
@@ -68,6 +69,7 @@ export function toMovieDetail(raw, images) {
     cast: (raw.credits?.cast ?? []).slice(0, 12).map((c) => toPersonCredit(c, images)),
     videos: (raw.videos?.results ?? []).filter((v) => v.site === 'YouTube'),
     recommendations: (raw.recommendations?.results ?? []).map((r) => toCardModel(r, images)),
+    watchProviders: toWatchProviders(raw['watch/providers'], images),
   };
 }
 
@@ -98,6 +100,55 @@ export function toTvDetail(raw, images) {
     cast: (raw.credits?.cast ?? []).slice(0, 12).map((c) => toPersonCredit(c, images)),
     videos: (raw.videos?.results ?? []).filter((v) => v.site === 'YouTube'),
     recommendations: (raw.recommendations?.results ?? []).map((r) => toCardModel(r, images)),
+    watchProviders: toWatchProviders(raw['watch/providers'], images),
+  };
+}
+
+/**
+ * Map TMDB's /watch/providers payload (embedded via append_to_response) to the
+ * app's legal "Where to Watch" model, scoped to the configured region. TMDB's
+ * terms require attributing this data to JustWatch and linking users to TMDB's
+ * own watch page — both are carried through on the returned `link`.
+ * @param {any} raw
+ * @param {import('../services/tmdb/ImageService.js').ImageService} images
+ * @returns {{ link: string|null, flatrate: object[], rent: object[], buy: object[] } | null}
+ */
+export function toWatchProviders(raw, images) {
+  const entry = raw?.results?.[TMDB.defaultRegion];
+  if (!entry) return null;
+  const pick = (list) => (list ?? [])
+    .map((p) => ({ id: p.provider_id, name: p.provider_name, logoUrl: images.url(p.logo_path, 'logo', 'w92') }));
+  const flatrate = pick(entry.flatrate);
+  const rent = pick(entry.rent);
+  const buy = pick(entry.buy);
+  if (!flatrate.length && !rent.length && !buy.length) return null;
+  return { link: entry.link ?? null, flatrate, rent, buy };
+}
+
+/**
+ * Map a TMDB season detail payload to the season detail view model.
+ * @param {any} raw
+ * @param {import('../services/tmdb/ImageService.js').ImageService} images
+ * @returns {object}
+ */
+export function toSeasonDetail(raw, images) {
+  return {
+    id: raw.id,
+    seasonNumber: raw.season_number,
+    name: raw.name ?? `Season ${raw.season_number}`,
+    overview: raw.overview ?? '',
+    posterUrl: images.url(raw.poster_path, 'poster', 'w342'),
+    airDate: raw.air_date ?? null,
+    episodes: (raw.episodes ?? []).map((e) => ({
+      id: e.id,
+      episodeNumber: e.episode_number,
+      name: e.name ?? `Episode ${e.episode_number}`,
+      overview: e.overview ?? '',
+      stillUrl: images.url(e.still_path, 'still', 'w300'),
+      airDate: e.air_date ?? null,
+      runtime: e.runtime ?? null,
+      rating: formatRating(e.vote_average),
+    })),
   };
 }
 

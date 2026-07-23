@@ -157,3 +157,60 @@
   .detail__cast-card { width: 140px; }
   .detail__season-card { width: 160px; }
 }
+/* ---------- Where to Watch (legal providers, TMDB/JustWatch data) ---------- */
+.detail__watch-providers { margin-bottom: var(--space-6); }
+.detail__watch-group-title { font-size: var(--font-size-body-sm); color: var(--color-text-muted); margin-top: var(--space-3); margin-bottom: var(--space-2); }
+.detail__watch-providers-row { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.detail__watch-provider {
+  display: block; width: 48px; height: 48px; border-radius: var(--radius-md); overflow: hidden;
+  background: var(--surface-1); transition: transform var(--duration-fast) var(--ease-standard);
+}
+.detail__watch-provider:hover, .detail__watch-provider:focus-visible { transform: scale(1.08); }
+.detail__watch-provider img { width: 100%; height: 100%; object-fit: cover; }
+.detail__watch-attribution { color: var(--color-text-muted); font-size: var(--font-size-caption); margin-top: var(--space-3); }
+
+/* ---------- Season detail page ---------- */
+.season-detail__back {
+  display: inline-block; color: var(--color-text-muted); margin-bottom: var(--space-4);
+  transition: color var(--duration-base) var(--ease-standard);
+}
+.season-detail__back:hover { color: var(--color-text); }
+
+.season-detail__header {
+  display: flex; gap: var(--space-5); margin-bottom: var(--space-6);
+}
+.season-detail__poster {
+  flex: 0 0 auto; width: 160px; border-radius: var(--radius-lg);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, .45);
+}
+.season-detail__title { font-size: var(--font-size-h2); }
+.season-detail__meta { color: var(--color-text-secondary); margin-top: var(--space-2); }
+.season-detail__overview { color: var(--color-text-secondary); margin-top: var(--space-3); max-width: 65ch; }
+
+.season-detail__episodes { display: flex; flex-direction: column; gap: var(--space-4); }
+
+.episode-row {
+  display: flex; gap: var(--space-4);
+  background: var(--surface-1); border-radius: var(--radius-lg);
+  padding: var(--space-3); transition: background var(--duration-base) var(--ease-standard);
+}
+.episode-row:hover { background: var(--surface-2); }
+.episode-row__still {
+  flex: 0 0 auto; width: 180px; aspect-ratio: 16 / 9; object-fit: cover;
+  border-radius: var(--radius-md); background: var(--surface-2);
+}
+.episode-row__body { min-width: 0; }
+.episode-row__title-line { display: flex; align-items: baseline; gap: var(--space-2); flex-wrap: wrap; }
+.episode-row__number { color: var(--color-text-muted); }
+.episode-row__title { font-size: var(--font-size-body-lg); line-height: var(--line-height-tight); }
+.episode-row__rating { color: var(--color-text-muted); font-size: var(--font-size-body-sm); margin-left: auto; }
+.episode-row__meta { color: var(--color-text-muted); font-size: var(--font-size-body-sm); margin-top: var(--space-1); }
+.episode-row__overview { color: var(--color-text-secondary); margin-top: var(--space-2); }
+
+@media (max-width: 639px) {
+  .season-detail__header { flex-direction: column; }
+  .season-detail__poster { width: 120px; }
+  .episode-row { flex-direction: column; }
+  .episode-row__still { width: 100%; }
+  .episode-row__rating { margin-left: 0; }
+}

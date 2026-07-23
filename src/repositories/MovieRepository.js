@@ -38,7 +38,7 @@ export class MovieRepository extends BaseRepository {
    */
   detail(id) {
     return this.fetchMapped(`/movie/${id}`, (r) => toMovieDetail(r, this.images),
-      { params: { append_to_response: 'credits,videos,images,recommendations' }, ttl: this.ttl.long });
+      { params: { append_to_response: 'credits,videos,images,recommendations,watch/providers' }, ttl: this.ttl.long });
   }
   /** @param {string|number} id @param {number} [page] */
   similar(id, page = 1) {

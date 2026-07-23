@@ -127,6 +127,46 @@ export class DetailPage extends Page {
   }
 
   /**
+   * Legal "Where to Watch" section, sourced from TMDB's watch/providers data
+   * (TMDB requires attributing this to JustWatch and linking back to their own
+   * watch page — both are honored here). Renders nothing if TMDB has no
+   * provider data for the configured region.
+   * @param {{link:string|null, flatrate:object[], rent:object[], buy:object[]}|null} wp
+   * @returns {HTMLElement}
+   */
+  watchProvidersSection(wp) {
+    const section = createElement('section', { className: 'detail__watch-providers container' });
+    if (!wp) return section;
+    section.append(createElement('h2', { className: 'detail__section-title', text: 'Where to Watch' }));
+
+    /** @param {string} label @param {object[]} list */
+    const group = (label, list) => {
+      if (!list.length) return;
+      section.append(createElement('h3', { className: 'detail__watch-group-title', text: label }));
+      const row = createElement('div', { className: 'detail__watch-providers-row' });
+      for (const p of list) {
+        const link = createElement('a', {
+          className: 'detail__watch-provider', attrs: {
+            href: wp.link ?? '#', target: '_blank', rel: 'noopener noreferrer', title: p.name,
+          },
+        });
+        if (p.logoUrl) link.append(createElement('img', { attrs: { src: p.logoUrl, alt: p.name, loading: 'lazy' } }));
+        row.append(link);
+      }
+      section.append(row);
+    };
+    group('Stream', wp.flatrate);
+    group('Rent', wp.rent);
+    group('Buy', wp.buy);
+
+    section.append(createElement('p', {
+      className: 'detail__watch-attribution',
+      text: 'Streaming availability data provided by JustWatch.',
+    }));
+    return section;
+  }
+
+  /**
    * Cast rail shared by movie/TV/person credits.
    * @param {any[]} cast @returns {HTMLElement}
    */
