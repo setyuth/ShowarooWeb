@@ -147,7 +147,7 @@ export class DetailPage extends Page {
       for (const p of list) {
         const link = createElement('a', {
           className: 'detail__watch-provider', attrs: {
-            href: wp.link ?? '#', target: '_blank', rel: 'noopener noreferrer', title: p.name,
+            href: p.homepageUrl ?? wp.link ?? '#', target: '_blank', rel: 'noopener noreferrer', title: p.name,
           },
         });
         if (p.logoUrl) link.append(createElement('img', { attrs: { src: p.logoUrl, alt: p.name, loading: 'lazy' } }));
@@ -161,8 +161,48 @@ export class DetailPage extends Page {
 
     section.append(createElement('p', {
       className: 'detail__watch-attribution',
-      text: 'Streaming availability data provided by JustWatch.',
+      text: 'Streaming availability data provided by JustWatch. Logos link to each service directly where known, otherwise to TMDB\u2019s watch page.',
     }));
+    return section;
+  }
+
+  /**
+   * Extra factual metadata (status, language, budget/revenue, studios, etc.).
+   * Skips any field the API didn't return rather than showing empty rows.
+   * @param {Record<string, any>} facts
+   * @returns {HTMLElement}
+   */
+  factsSection(facts) {
+    const section = createElement('section', { className: 'detail__facts container' });
+    if (!facts) return section;
+
+    /** @param {string} label @param {string|null|undefined} value */
+    const row = (label, value) => {
+      if (!value) return;
+      const item = createElement('div', { className: 'detail__facts-row' });
+      item.append(createElement('span', { className: 'detail__facts-label', text: label }));
+      item.append(createElement('span', { className: 'detail__facts-value', text: value }));
+      section.append(item);
+    };
+
+    const money = (n) => (n ? `$${Number(n).toLocaleString('en-US')}` : null);
+
+    row('Status', facts.status);
+    row('Original Title', facts.originalName);
+    row('Original Language', facts.originalLanguage);
+    row('Networks', facts.networks?.join(', '));
+    row('Production', facts.productionCompanies?.slice(0, 3).join(', '));
+    row('Budget', money(facts.budget));
+    row('Revenue', money(facts.revenue));
+
+    if (section.children.length === 0) return section;
+    section.prepend(createElement('h2', { className: 'detail__section-title', text: 'Details' }));
+    if (facts.homepage) {
+      section.append(createElement('a', {
+        className: 'detail__facts-homepage', text: 'Official site \u2197',
+        attrs: { href: facts.homepage, target: '_blank', rel: 'noopener noreferrer' },
+      }));
+    }
     return section;
   }
 

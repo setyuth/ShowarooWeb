@@ -16,6 +16,7 @@ export class MovieDetailPage extends DetailPage {
   renderBody(m) {
     const body = createElement('div');
     body.append(this.watchProvidersSection(m.watchProviders));
+    body.append(this.factsSection(m.facts));
     body.append(this.castSection(m.cast));
     body.append(this.videosSection(m.videos));
     body.append(this.recommendationsSection('More Like This', m.recommendations));

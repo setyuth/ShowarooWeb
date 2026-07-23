@@ -1,12 +1,16 @@
 /**
- * @file Watch page at #/watch/:type/:id. Hosts the PlayerEngine with the active
- * provider, shows the title, a server selector (single default until Phase 12),
- * and tracks playback progress into AppState for Continue Watching (Phase 13
- * deepens this; a minimal start marker is written here).
+ * @file Watch page at #/watch/:type/:id. Builds the streaming stack
+ * (StreamingOrchestrator + ScoringEngine + ProviderStats + StreamingAnalytics)
+ * and hosts it in PlayerEngine. Progress is written to AppState for Continue
+ * Watching.
  */
 
 import { Page } from '../pages/Page.js';
 import { PlayerEngine } from './PlayerEngine.js';
+import { StreamingOrchestrator } from './StreamingOrchestrator.js';
+import { ScoringEngine } from './ScoringEngine.js';
+import { ProviderStats } from './ProviderStats.js';
+import { StreamingAnalytics } from './StreamingAnalytics.js';
 import { createElement } from '../utils/dom.js';
 
 /**
@@ -15,6 +19,8 @@ import { createElement } from '../utils/dom.js';
  * @property {import('../repositories/index.js').MovieRepository} movie
  * @property {import('../repositories/index.js').TvRepository} tv
  * @property {import('../state/AppState.js').AppState} state
+ * @property {import('../services/storage/StorageService.js').StorageService} store
+ * @property {import('../core/EventBus.js').EventBus} bus
  */
 
 export class WatchPage extends Page {
@@ -24,9 +30,9 @@ export class WatchPage extends Page {
   /** @returns {HTMLElement} */
   render() {
     const root = createElement('div', { className: 'watch container' });
-    const provider = this.deps.registry.default;
+    const { registry, movie, tv, state, store, bus } = this.deps;
 
-    if (!provider) {
+    if (registry.list().length === 0) {
       root.append(createElement('div', {
         className: 'watch__empty',
         text: 'No streaming provider is configured. Register a licensed provider to enable playback.',
@@ -34,7 +40,14 @@ export class WatchPage extends Page {
       return root;
     }
 
-    const repo = this.target.type === 'tv' ? this.deps.tv : this.deps.movie;
+    // The orchestrator stack is built once per page visit; stats/analytics
+    // persist across visits via the shared storage service.
+    const stats = new ProviderStats(store);
+    const scoring = new ScoringEngine();
+    const analytics = new StreamingAnalytics(store, stats);
+    const orchestrator = new StreamingOrchestrator({ registry, scoring, stats, analytics, state, bus });
+
+    const repo = this.target.type === 'tv' ? tv : movie;
     this.section({
       container: root,
       skeleton: createElement('div', { className: 'watch__skeleton' }),
@@ -42,13 +55,19 @@ export class WatchPage extends Page {
       render: (detail) => {
         const frag = createElement('div');
         frag.append(createElement('h1', { className: 'watch__title', text: detail.title }));
+
         const player = new PlayerEngine({
+          orchestrator, registry, stats,
           request: { type: this.target.type, id: this.target.id },
-          provider, title: detail.title,
+          title: detail.title,
+          preferredId: state.getState().preferences.preferredProvider,
+          onSetPreferred: (id) => state.setPreferences({ preferredProvider: id }),
         });
         frag.append(player.render());
-        // Minimal Continue Watching marker; real progress tracking is Phase 13.
-        this.deps.state.updateProgress({
+
+        // Minimal Continue Watching marker; full progress tracking hooks into
+        // the player's own monitor in a later pass.
+        state.updateProgress({
           media: { id: detail.id, mediaType: detail.mediaType, title: detail.title, posterUrl: detail.posterUrl ?? null, year: detail.year, rating: detail.rating },
           progress: 0, updatedAt: Date.now(),
         });

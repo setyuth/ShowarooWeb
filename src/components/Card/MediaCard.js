@@ -52,7 +52,7 @@ export class MediaCard extends Component {
     } else {
       media.append(createElement('div', { className: 'ui-card__poster ui-card__poster--empty', attrs: { 'aria-hidden': 'true' } }));
     }
-    if (model.rating) new Badge({ label: model.rating, tone: 'primary' }).mount(media);
+    if (model.rating) new Badge({ label: model.rating, tone: 'rating', icon: this.#starIcon() }).mount(media);
 
     // Overlay actions (favorite / watch later).
     const overlay = createElement('div', { className: 'ui-card__actions' });
@@ -81,6 +81,22 @@ export class MediaCard extends Component {
       });
     }
     return card;
+  }
+
+  /**
+   * Small inline star glyph for the rating badge. No icon font/sprite system
+   * exists yet, so this is self-contained SVG rather than a data-icon hook.
+   * @returns {SVGSVGElement}
+   */
+  #starIcon() {
+    const ns = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('viewBox', '0 0 20 20');
+    svg.setAttribute('width', '11');
+    svg.setAttribute('height', '11');
+    svg.setAttribute('fill', 'currentColor');
+    svg.innerHTML = '<path d="M10 1.5l2.6 5.4 5.9.7-4.3 4.1 1.1 5.9L10 14.8l-5.3 2.8 1.1-5.9-4.3-4.1 5.9-.7z"/>';
+    return /** @type {SVGSVGElement} */ (svg);
   }
 
   /**

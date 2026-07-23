@@ -62,7 +62,7 @@ export class HomePage extends Page {
    * @param {() => Promise<import('../../core/Result.js').Result<{items: any[]}>>} load
    */
   #addRail(parent, title, load) {
-    const container = createElement('div', { className: 'home__rail' });
+    const container = createElement('div', { className: 'home__rail container' });
     parent.append(container);
     const skeleton = this.#railSkeleton();
     this.section({
@@ -86,7 +86,7 @@ export class HomePage extends Page {
       .sort((a, b) => b.updatedAt - a.updatedAt)
       .map((e) => ({ ...e.media, progress: e.progress }));
     if (cw.length === 0) return; // Empty by design: omit the rail entirely, no clutter.
-    const container = createElement('div', { className: 'home__rail' });
+    const container = createElement('div', { className: 'home__rail container' });
     parent.append(container);
     container.append(new ContentRail({
       title: 'Continue Watching', items: cw,

@@ -212,6 +212,8 @@ export class Bootstrap {
     const registry = this.#container.resolve('registry');
     const cw = this.#container.resolve('cw');
     const head = this.#container.resolve('head');
+    const store = this.#container.resolve(SERVICES.localStore);
+    const bus = this.#container.resolve(SERVICES.bus);
     const outlet = this.#container.resolve('shell').outlet;
 
     /** @param {import('../pages/Page.js').Page} page @param {string} title */
@@ -277,7 +279,7 @@ export class Bootstrap {
     router.on('/watch/:type/:id', ({ params }) =>
       mountPage(
         new WatchPage(
-          { registry, movie: repos.movie, tv: repos.tv, state },
+          { registry, movie: repos.movie, tv: repos.tv, state, store, bus },
           { type: /** @type {'movie'|'tv'} */ (params.type), id: params.id },
         ),
         'Watch',

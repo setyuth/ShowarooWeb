@@ -5,6 +5,7 @@
 
 import { formatYear, formatRating, formatRuntime } from '../utils/format.js';
 import { TMDB } from '../config/index.js';
+import { providerHomepage } from '../services/tmdb/providerLinks.js';
 
 /**
  * @typedef {import('../components/Card/MediaCard.js').MediaCardModel} MediaCardModel
@@ -70,6 +71,14 @@ export function toMovieDetail(raw, images) {
     videos: (raw.videos?.results ?? []).filter((v) => v.site === 'YouTube'),
     recommendations: (raw.recommendations?.results ?? []).map((r) => toCardModel(r, images)),
     watchProviders: toWatchProviders(raw['watch/providers'], images),
+    facts: {
+      status: raw.status ?? null,
+      originalLanguage: (raw.original_language ?? '').toUpperCase() || null,
+      budget: raw.budget || null,
+      revenue: raw.revenue || null,
+      productionCompanies: (raw.production_companies ?? []).map((c) => c.name),
+      homepage: raw.homepage || null,
+    },
   };
 }
 
@@ -101,6 +110,14 @@ export function toTvDetail(raw, images) {
     videos: (raw.videos?.results ?? []).filter((v) => v.site === 'YouTube'),
     recommendations: (raw.recommendations?.results ?? []).map((r) => toCardModel(r, images)),
     watchProviders: toWatchProviders(raw['watch/providers'], images),
+    facts: {
+      status: raw.status ?? null,
+      originalLanguage: (raw.original_language ?? '').toUpperCase() || null,
+      originalName: raw.original_name && raw.original_name !== raw.name ? raw.original_name : null,
+      networks: (raw.networks ?? []).map((n) => n.name),
+      productionCompanies: (raw.production_companies ?? []).map((c) => c.name),
+      homepage: raw.homepage || null,
+    },
   };
 }
 
@@ -117,7 +134,11 @@ export function toWatchProviders(raw, images) {
   const entry = raw?.results?.[TMDB.defaultRegion];
   if (!entry) return null;
   const pick = (list) => (list ?? [])
-    .map((p) => ({ id: p.provider_id, name: p.provider_name, logoUrl: images.url(p.logo_path, 'logo', 'w92') }));
+    .map((p) => ({
+      id: p.provider_id, name: p.provider_name,
+      logoUrl: images.url(p.logo_path, 'logo', 'w92'),
+      homepageUrl: providerHomepage(p.provider_id),
+    }));
   const flatrate = pick(entry.flatrate);
   const rent = pick(entry.rent);
   const buy = pick(entry.buy);
