@@ -33,6 +33,8 @@ import { HeadManager } from '../seo/HeadManager.js';
 
 import { Router, AppShell } from '../layout/index.js';
 import { HomePage } from '../pages/home/HomePage.js';
+import { createMoviesPage } from '../pages/browse/MoviesPage.js';
+import { createTvPage } from '../pages/browse/TvPage.js';
 import { SearchPage } from '../search/SearchPage.js';
 import { MovieDetailPage } from '../pages/detail/MovieDetailPage.js';
 import { TvDetailPage } from '../pages/detail/TvDetailPage.js';
@@ -226,6 +228,11 @@ export class Bootstrap {
     router.on('/', () =>
       mountPage(new HomePage({ movie: repos.movie, tv: repos.tv, state, router }), ''));
 
+    router.on('/movies', () =>
+      mountPage(createMoviesPage({ movie: repos.movie, state, router }), 'Movies'));
+    router.on('/tv', () =>
+      mountPage(createTvPage({ tv: repos.tv, state, router }), 'TV Shows'));
+
     router.on('/search', ({ query }) =>
       mountPage(new SearchPage({ search: repos.search, state, router }, query.get('q') ?? ''), 'Search'));
 
@@ -256,8 +263,7 @@ export class Bootstrap {
     router.on('/history', () => mountPage(new HistoryPage({ state, router }), 'History'));
     router.on('/continue', () => mountPage(new ContinueWatchingPage({ cw, router }), 'Continue Watching'));
 
-    // '/movies' and '/tv' are linked from the header nav but have no browse-all
-    // page built yet — fall back to home instead of a dead route.
+    // Anything else unmatched falls back to home rather than a dead page.
     router.fallback(() => router.navigate('/'));
 
     this.#container.register('mountPage', mountPage);
