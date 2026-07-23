@@ -35,6 +35,7 @@ import { Router, AppShell } from '../layout/index.js';
 import { HomePage } from '../pages/home/HomePage.js';
 import { createMoviesPage } from '../pages/browse/MoviesPage.js';
 import { createTvPage } from '../pages/browse/TvPage.js';
+import { DiscoverPage } from '../pages/discover/DiscoverPage.js';
 import { SearchPage } from '../search/SearchPage.js';
 import { MovieDetailPage } from '../pages/detail/MovieDetailPage.js';
 import { TvDetailPage } from '../pages/detail/TvDetailPage.js';
@@ -251,6 +252,8 @@ export class Bootstrap {
       mountPage(createMoviesPage({ movie: repos.movie, state, router }), 'Movies'));
     router.on('/tv', () =>
       mountPage(createTvPage({ tv: repos.tv, state, router }), 'TV Shows'));
+    router.on('/discover', () =>
+      mountPage(new DiscoverPage({ discover: repos.discover, state, router }), 'Discover'));
 
     router.on('/search', ({ query }) =>
       mountPage(new SearchPage({ search: repos.search, state, router }, query.get('q') ?? ''), 'Search'));

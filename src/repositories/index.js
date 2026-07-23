@@ -1,23 +1,25 @@
 /**
- * @file Repository barrel + factory. One place assembles all repositories over a
- * single TmdbService, so the container registers them together.
+ * @file Repository barrel + a factory that wires all repositories to one
+ * TmdbService instance. The app resolves repositories from the container.
  */
 
 import { MovieRepository } from './MovieRepository.js';
 import { TvRepository } from './TvRepository.js';
 import { PersonRepository } from './PersonRepository.js';
-import { CollectionRepository } from './CollectionRepository.js';
-import { CompanyRepository } from './CompanyRepository.js';
-import { NetworkRepository } from './NetworkRepository.js';
+import { CollectionRepository, CompanyRepository, NetworkRepository } from './CollectionRepository.js';
 import { SearchRepository } from './SearchRepository.js';
+import { DiscoverRepository } from './DiscoverRepository.js';
 
-export { toCardModel } from './mappers.js';
+export {
+  MovieRepository, TvRepository, PersonRepository, CollectionRepository,
+  CompanyRepository, NetworkRepository, SearchRepository, DiscoverRepository,
+};
 
 /**
  * @param {import('../services/tmdb/TmdbService.js').TmdbService} tmdb
  * @returns {{ movie: MovieRepository, tv: TvRepository, person: PersonRepository,
  *   collection: CollectionRepository, company: CompanyRepository,
- *   network: NetworkRepository, search: SearchRepository }}
+ *   network: NetworkRepository, search: SearchRepository, discover: DiscoverRepository }}
  */
 export function createRepositories(tmdb) {
   return {
@@ -28,5 +30,6 @@ export function createRepositories(tmdb) {
     company: new CompanyRepository(tmdb),
     network: new NetworkRepository(tmdb),
     search: new SearchRepository(tmdb),
+    discover: new DiscoverRepository(tmdb),
   };
 }

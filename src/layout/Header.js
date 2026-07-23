@@ -1,7 +1,7 @@
 /**
- * @file Sticky desktop header (DS §12). Brand, primary nav with active states,
- * and a search entry point. Collapses to brand + search on small screens; the
- * primary nav moves to the MobileNav bottom bar.
+ * @file Sticky desktop header (DS §12). Logo mark + wordmark, primary nav with
+ * active states, and a search entry point. Collapses to brand + search on
+ * small screens; the primary nav moves to the MobileNav bottom bar.
  */
 
 import { Component } from '../components/Component.js';
@@ -13,6 +13,7 @@ export const NAV_ITEMS = Object.freeze([
   { id: 'home', label: 'Home', path: '/', icon: 'home' },
   { id: 'movies', label: 'Movies', path: '/movies', icon: 'film' },
   { id: 'tv', label: 'TV', path: '/tv', icon: 'tv' },
+  { id: 'discover', label: 'Discover', path: '/discover', icon: 'compass' },
   { id: 'favorites', label: 'Favorites', path: '/favorites', icon: 'heart' },
 ]);
 
@@ -32,11 +33,12 @@ export class Header extends Component {
     const header = createElement('header', { className: 'app-header', attrs: { role: 'banner' } });
     const inner = createElement('div', { className: 'app-header__inner container' });
 
-    // Brand.
+    // Brand: logo mark (inline SVG, no external asset) + wordmark.
     const brand = createElement('a', {
-      className: 'app-header__brand', text: 'ShowAroo',
+      className: 'app-header__brand',
       attrs: { href: '#/', 'aria-label': 'ShowAroo home' },
     });
+    brand.append(this.#logoMark(), createElement('span', { className: 'app-header__brand-word', text: 'ShowAroo' }));
     this.on(brand, 'click', (e) => { e.preventDefault(); onNavigate('/'); });
 
     // Primary nav.
@@ -66,6 +68,34 @@ export class Header extends Component {
     inner.append(brand, nav, search);
     header.append(inner);
     return header;
+  }
+
+  /**
+   * Inline SVG logo mark: a rounded gradient badge with a play glyph. No
+   * external image asset required; colors are theme tokens, so it stays in
+   * sync with the design system automatically. Swap this for an <img> if a
+   * real brand asset exists later.
+   * @returns {SVGSVGElement}
+   */
+  #logoMark() {
+    const ns = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(ns, 'svg');
+    svg.setAttribute('viewBox', '0 0 40 40');
+    svg.setAttribute('width', '32');
+    svg.setAttribute('height', '32');
+    svg.setAttribute('aria-hidden', 'true');
+    svg.setAttribute('class', 'app-header__logo-mark');
+    svg.innerHTML = `
+      <defs>
+        <linearGradient id="showaroo-logo-grad" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="var(--color-primary)"/>
+          <stop offset="1" stop-color="var(--color-accent, var(--color-primary))"/>
+        </linearGradient>
+      </defs>
+      <rect width="40" height="40" rx="11" fill="url(#showaroo-logo-grad)"/>
+      <path d="M16 12.5 L28 20 L16 27.5 Z" fill="var(--color-bg)"/>
+    `;
+    return /** @type {SVGSVGElement} */ (svg);
   }
 
   /**
