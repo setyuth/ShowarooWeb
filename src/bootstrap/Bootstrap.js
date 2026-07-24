@@ -216,6 +216,12 @@ export class Bootstrap {
     const bus = this.#container.resolve(SERVICES.bus);
     const outlet = this.#container.resolve('shell').outlet;
 
+    /** @type {ViewTransition | null} Tracks the in-flight transition so a fast
+     * second navigation waits for it instead of starting an overlapping one —
+     * that overlap is exactly what throws "Transition was aborted because of
+     * invalid state". */
+    let activeTransition = null;
+
     /** @param {import('../pages/Page.js').Page} page @param {string} title */
     const mountPage = (page, title) => {
       const doRender = () => renderWithBoundary(
@@ -236,7 +242,18 @@ export class Bootstrap {
       // that lack it. Both paths honor prefers-reduced-motion automatically
       // (native via the UA, fallback via the @media block in motion.css).
       if (document.startViewTransition) {
-        document.startViewTransition(swap);
+        const start = () => {
+          const transition = document.startViewTransition(swap);
+          activeTransition = transition;
+          // .finished always settles (resolves on success, rejects if the UA
+          // aborts it) — catching here is what stops it surfacing as an
+          // unhandled rejection in Logger.
+          transition.finished.catch(() => {}).finally(() => {
+            if (activeTransition === transition) activeTransition = null;
+          });
+        };
+        if (activeTransition) activeTransition.finished.catch(() => {}).finally(start);
+        else start();
       } else {
         outlet.classList.add('route-fade-out');
         window.setTimeout(() => {

@@ -73,7 +73,7 @@ export class PlayerEngine extends Component {
             allow: 'autoplay; encrypted-media; picture-in-picture; fullscreen',
             allowfullscreen: 'true', loading: 'lazy',
             referrerpolicy: 'strict-origin-when-cross-origin',
-            sandbox: 'allow-scripts allow-same-origin allow-presentation allow-forms',
+            sandbox: 'allow-scripts allow-same-origin allow-presentation allow-forms allow-popups allow-popups-to-escape-sandbox',
           },
         }))
       : /** @type {HTMLVideoElement} */ (createElement('video', {
