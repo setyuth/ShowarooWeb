@@ -26,7 +26,7 @@ import { NetworkStatus } from '../errors/NetworkStatus.js';
 import { TmdbService } from '../services/tmdb/index.js';
 import { createRepositories } from '../repositories/index.js';
 import { AppState } from '../state/index.js';
-import { ProviderRegistry, OfficialTrailerProvider } from '../player/index.js';
+import { ProviderRegistry, OfficialTrailerProvider, InternetArchiveProvider } from '../player/index.js';
 import { ContinueWatching } from '../player/ContinueWatching.js';
 import { WatchPage } from '../player/WatchPage.js';
 import { HeadManager } from '../seo/HeadManager.js';
@@ -164,11 +164,13 @@ export class Bootstrap {
 
   #initPlayer() {
     const repos = this.#container.resolve('repos');
-    // Lawful default only: the official-trailer provider. Operators register
-    // additional LICENSED providers on this registry themselves.
-    const registry = new ProviderRegistry().register(
-      new OfficialTrailerProvider({ movie: repos.movie, tv: repos.tv }),
-    );
+    // Lawful providers only: the official-trailer provider, and the
+    // public-domain provider (Internet Archive, hand-vetted catalog).
+    // Operators register additional LICENSED providers on this registry
+    // themselves.
+    const registry = new ProviderRegistry()
+      .register(new OfficialTrailerProvider({ movie: repos.movie, tv: repos.tv }))
+      .register(new InternetArchiveProvider());
     const cw = new ContinueWatching(this.#container.resolve('state'));
     this.#container.register('registry', registry);
     this.#container.register('cw', cw);

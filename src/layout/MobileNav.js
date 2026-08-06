@@ -1,6 +1,10 @@
 /**
  * @file Mobile bottom navigation (DS §12). Touch-friendly targets (min 44px),
  * icon + label, active state. Hidden on desktop via CSS; complements the header.
+ *
+ * Items with `external: true` (e.g. the Android app link) render as real
+ * <a target="_blank"> elements instead of SPA-route buttons — they leave the
+ * app entirely, so they must not go through onNavigate()/router.navigate().
  */
 
 import { Component } from '../components/Component.js';
@@ -23,6 +27,22 @@ export class MobileNav extends Component {
       className: 'app-mobilenav', attrs: { 'aria-label': 'Primary mobile' },
     });
     for (const item of NAV_ITEMS) {
+      if (item.external) {
+        const link = createElement('a', {
+          className: 'app-mobilenav__item app-mobilenav__item--external',
+          attrs: {
+            href: item.href,
+            target: '_blank',
+            rel: 'noopener noreferrer',
+            'aria-label': item.label,
+          },
+          dataset: item.icon ? { icon: item.icon } : undefined,
+        });
+        link.append(createElement('span', { className: 'app-mobilenav__label', text: item.label }));
+        nav.append(link);
+        continue;
+      }
+
       const btn = createElement('button', {
         className: 'app-mobilenav__item',
         attrs: { type: 'button', 'data-path': item.path, 'aria-label': item.label },
@@ -37,7 +57,7 @@ export class MobileNav extends Component {
 
   /** @param {string} path @returns {void} */
   setActive(path) {
-    this.el?.querySelectorAll('.app-mobilenav__item').forEach((btn) => {
+    this.el?.querySelectorAll('.app-mobilenav__item[data-path]').forEach((btn) => {
       const isActive = btn.getAttribute('data-path') === path;
       btn.classList.toggle('is-active', isActive);
       if (isActive) btn.setAttribute('aria-current', 'page');

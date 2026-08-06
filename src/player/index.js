@@ -1,6 +1,7 @@
 /** @file Player barrel + factory, now wiring the full manager stack. */
 export { StreamProvider } from './StreamProvider.js';
 export { OfficialTrailerProvider } from './OfficialTrailerProvider.js';
+export { InternetArchiveProvider } from './InternetArchiveProvider.js';
 export { ProviderRegistry } from './ProviderRegistry.js';
 export { HealthMonitor } from './HealthMonitor.js';
 export { ProviderAnalytics } from './ProviderAnalytics.js';
@@ -12,6 +13,15 @@ export { WatchPage } from './WatchPage.js';
 /**
  * Build the full orchestrated player stack. Operators register additional
  * LICENSED providers on the registry; the orchestrator does the rest.
+ *
+ * NOTE: this factory is not currently called anywhere — Bootstrap.js#initPlayer()
+ * builds its own ProviderRegistry by hand instead. It also references
+ * ScoringEngine / StreamingOrchestrator / ProviderStats / StreamingAnalytics /
+ * HealthCheckService, none of which are imported above, and none of which
+ * match this file's actual exports (HealthMonitor / ProviderAnalytics /
+ * ProviderManager). Left as-is per your instruction — flagging again here
+ * so it isn't mistaken for working wiring later.
+ *
  * @param {object} deps
  * @param {{ movie:any, tv:any }} deps.repos
  * @param {import('../services/storage/StorageService.js').StorageService} deps.store

@@ -8,13 +8,27 @@ import { Component } from '../components/Component.js';
 import { createElement } from '../utils/dom.js';
 import { debounce } from '../utils/async.js';
 
-/** Primary navigation model. Single source so desktop + mobile stay in sync. */
+/**
+ * Primary navigation model. Single source so desktop + mobile stay in sync.
+ * Items with `external: true` link off-app (e.g. app-store listings) and
+ * carry `href` instead of `path` — both Header and MobileNav must render
+ * these as real anchors with target="_blank", never through onNavigate()/
+ * router.navigate(), since there's no in-app route to go to.
+ */
 export const NAV_ITEMS = Object.freeze([
   { id: 'home', label: 'Home', path: '/', icon: 'home' },
   { id: 'movies', label: 'Movies', path: '/movies', icon: 'film' },
   { id: 'tv', label: 'TV', path: '/tv', icon: 'tv' },
   { id: 'discover', label: 'Discover', path: '/discover', icon: 'compass' },
   { id: 'favorites', label: 'Favorites', path: '/favorites', icon: 'heart' },
+  {
+    id: 'android-app',
+    label: 'Get the App',
+    external: true,
+    href: 'https://play.google.com/store/apps/details?id=com.personallifeinsights.showarooapp',
+    // icon omitted on purpose — icon-rendering CSS isn't wired up yet
+    // (pre-existing known gap, see project handoff doc).
+  },
 ]);
 
 /**
@@ -44,6 +58,20 @@ export class Header extends Component {
     // Primary nav.
     const nav = createElement('nav', { className: 'app-header__nav', attrs: { 'aria-label': 'Primary' } });
     for (const item of NAV_ITEMS) {
+      if (item.external) {
+        const extLink = createElement('a', {
+          className: 'app-header__link app-header__link--external', text: item.label,
+          attrs: {
+            href: item.href,
+            target: '_blank',
+            rel: 'noopener noreferrer',
+            'aria-label': item.label,
+          },
+        });
+        nav.append(extLink);
+        continue;
+      }
+
       const link = createElement('a', {
         className: 'app-header__link', text: item.label,
         attrs: { href: `#${item.path}`, 'data-path': item.path },
@@ -104,7 +132,7 @@ export class Header extends Component {
    * @returns {void}
    */
   setActive(path) {
-    this.el?.querySelectorAll('.app-header__link').forEach((link) => {
+    this.el?.querySelectorAll('.app-header__link[data-path]').forEach((link) => {
       const isActive = link.getAttribute('data-path') === path;
       link.classList.toggle('is-active', isActive);
       if (isActive) link.setAttribute('aria-current', 'page');
