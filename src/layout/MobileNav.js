@@ -2,14 +2,15 @@
  * @file Mobile bottom navigation (DS §12). Touch-friendly targets (min 44px),
  * icon + label, active state. Hidden on desktop via CSS; complements the header.
  *
- * Items with `external: true` (e.g. the Android app link) render as real
- * <a target="_blank"> elements instead of SPA-route buttons — they leave the
- * app entirely, so they must not go through onNavigate()/router.navigate().
+ * Items with `external: true` (e.g. the Android app link) render as the real
+ * Google Play badge image instead of an SPA-route button — they leave the app
+ * entirely, so they must not go through onNavigate()/router.navigate(). See
+ * Header.js#PLAY_BADGE_SRC for the shared asset.
  */
 
 import { Component } from '../components/Component.js';
 import { createElement } from '../utils/dom.js';
-import { NAV_ITEMS } from './Header.js';
+import { NAV_ITEMS, PLAY_BADGE_SRC } from './Header.js';
 
 /**
  * @typedef {object} MobileNavProps
@@ -36,9 +37,11 @@ export class MobileNav extends Component {
             rel: 'noopener noreferrer',
             'aria-label': item.label,
           },
-          dataset: item.icon ? { icon: item.icon } : undefined,
         });
-        link.append(createElement('span', { className: 'app-mobilenav__label', text: item.label }));
+        link.append(createElement('img', {
+          className: 'app-mobilenav__playbadge-img',
+          attrs: { src: PLAY_BADGE_SRC, alt: 'Get it on Google Play', loading: 'lazy' },
+        }));
         nav.append(link);
         continue;
       }

@@ -11,6 +11,9 @@
 @keyframes mo-fade { from { opacity: 0; } to { opacity: 1; } }
 @keyframes mo-rise { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
 @keyframes mo-scale { from { opacity: 0; transform: scale(.96); } to { opacity: 1; transform: none; } }
+/* Slow drift for hero/detail backdrops (home.css, detail.css). One shared
+   keyframe so both stay visually consistent. */
+@keyframes mo-kenburns { from { transform: scale(1); } to { transform: scale(1.08); } }
 
 /* Staggered children (rails, grids): incremental delay via custom property. */
 .stagger > * { animation: mo-rise var(--duration-slow) var(--ease-emphasized) both; animation-delay: calc(var(--i, 0) * 40ms); }
@@ -23,13 +26,16 @@
 .press { transition: transform var(--duration-fast) var(--ease-standard); }
 .press:active { transform: scale(.97); }
 
-/* View Transitions API: keep it subtle + fast; tokens govern feel. */
-::view-transition-old(root), ::view-transition-new(root) {
-  animation-duration: var(--duration-base);
-}
+/* View Transitions API: outgoing view fades, incoming view fades + rises —
+   a touch more "premium" than the UA's plain symmetric cross-fade, still
+   fast and token-driven. Falls back to the .route-fade-* classes above on
+   browsers without View Transitions support (see Bootstrap.js#mountPage). */
+::view-transition-old(root) { animation: mo-fade var(--duration-fast) var(--ease-standard) reverse both; }
+::view-transition-new(root) { animation: mo-rise var(--duration-base) var(--ease-emphasized) both; }
 
 @media (prefers-reduced-motion: reduce) {
   .enter-fade, .enter-rise, .enter-scale, .stagger > *,
   .route-fade-out, .route-fade-in { animation: none !important; }
   .press:active { transform: none; }
+  ::view-transition-old(root), ::view-transition-new(root) { animation: none !important; }
 }

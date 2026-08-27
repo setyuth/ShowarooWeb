@@ -9,10 +9,19 @@ import { createElement } from '../utils/dom.js';
 import { debounce } from '../utils/async.js';
 
 /**
+ * Google's official Play Store badge asset (their brand kit — meant to be
+ * embedded as-is on external sites, not restyled). Using the real asset
+ * instead of a custom pill avoids both the trademark question and the
+ * "doesn't look like a real store badge" problem.
+ */
+export const PLAY_BADGE_SRC =
+  'https://play.google.com/intl/en_us/badges/static/images/badges/en-us_badge_web_generic.png';
+
+/**
  * Primary navigation model. Single source so desktop + mobile stay in sync.
  * Items with `external: true` link off-app (e.g. app-store listings) and
- * carry `href` instead of `path` — both Header and MobileNav must render
- * these as real anchors with target="_blank", never through onNavigate()/
+ * carry `href` instead of `path` — both Header and MobileNav render these
+ * as real anchors with target="_blank", never through onNavigate()/
  * router.navigate(), since there's no in-app route to go to.
  */
 export const NAV_ITEMS = Object.freeze([
@@ -23,11 +32,11 @@ export const NAV_ITEMS = Object.freeze([
   { id: 'favorites', label: 'Favorites', path: '/favorites', icon: 'heart' },
   {
     id: 'android-app',
-    label: 'Get the App',
+    label: 'Get ShowAroo on Google Play',
     external: true,
     href: 'https://play.google.com/store/apps/details?id=com.personallifeinsights.showarooapp',
-    // icon omitted on purpose — icon-rendering CSS isn't wired up yet
-    // (pre-existing known gap, see project handoff doc).
+    // Rendered as the official Play Store badge image, not a text link —
+    // see #androidBadge() in Header and MobileNav.
   },
 ]);
 
@@ -59,16 +68,7 @@ export class Header extends Component {
     const nav = createElement('nav', { className: 'app-header__nav', attrs: { 'aria-label': 'Primary' } });
     for (const item of NAV_ITEMS) {
       if (item.external) {
-        const extLink = createElement('a', {
-          className: 'app-header__link app-header__link--external', text: item.label,
-          attrs: {
-            href: item.href,
-            target: '_blank',
-            rel: 'noopener noreferrer',
-            'aria-label': item.label,
-          },
-        });
-        nav.append(extLink);
+        nav.append(this.#androidBadge(item, 'app-header__playbadge'));
         continue;
       }
 
@@ -96,6 +96,33 @@ export class Header extends Component {
     inner.append(brand, nav, search);
     header.append(inner);
     return header;
+  }
+
+  /**
+   * Real Google Play badge, wrapped in a plain anchor. Shared shape used by
+   * both Header and MobileNav so the two never drift apart visually.
+   * @param {typeof NAV_ITEMS[number]} item
+   * @param {string} wrapperClassName
+   * @returns {HTMLElement}
+   */
+  #androidBadge(item, wrapperClassName) {
+    const link = createElement('a', {
+      className: wrapperClassName,
+      attrs: {
+        href: item.href,
+        target: '_blank',
+        rel: 'noopener noreferrer',
+        'aria-label': item.label,
+      },
+    });
+    link.append(createElement('img', {
+      className: `${wrapperClassName}-img`,
+      attrs: {
+        src: PLAY_BADGE_SRC, alt: 'Get it on Google Play',
+        loading: 'lazy', width: '135', height: '40',
+      },
+    }));
+    return link;
   }
 
   /**

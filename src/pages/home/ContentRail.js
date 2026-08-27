@@ -32,12 +32,17 @@ export class ContentRail extends Component {
     head.append(createElement('h2', { className: 'rail__title', text: title }));
     rail.append(head);
 
+    // `stagger` (motion.css) staggers each direct child's rise-in via --i;
+    // previously only DiscoverPage's grid opted into this, so every rail on
+    // the homepage/detail pages just popped in instantly. Same visual
+    // language everywhere now.
     const track = createElement('div', {
-      className: 'rail__track', attrs: { role: 'list', tabindex: '0', 'aria-label': `${title} titles` },
+      className: 'rail__track stagger', attrs: { role: 'list', tabindex: '0', 'aria-label': `${title} titles` },
     });
-    for (const item of items) {
+    items.forEach((item, i) => {
       const model = { ...item, isFavorite: isFavorite(item.id, item.mediaType), isWatchLater: isWatchLater(item.id, item.mediaType) };
       const cardWrap = createElement('div', { className: 'rail__item', attrs: { role: 'listitem' } });
+      cardWrap.style.setProperty('--i', String(Math.min(i, 12)));
       new MediaCard({
         model,
         onOpen: (id) => onOpen(id, item.mediaType),
@@ -45,7 +50,7 @@ export class ContentRail extends Component {
         onToggleWatchLater: () => onToggleWatchLater(item),
       }).mount(cardWrap);
       track.append(cardWrap);
-    }
+    });
     rail.append(track);
     return rail;
   }

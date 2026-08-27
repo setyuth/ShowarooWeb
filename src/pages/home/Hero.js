@@ -39,7 +39,10 @@ export class Hero extends Component {
     }
     hero.append(createElement('div', { className: 'hero__scrim', attrs: { 'aria-hidden': 'true' } }));
 
-    const content = createElement('div', { className: 'hero__content container' });
+    // enter-rise: fade+rise entrance on mount (motion.css) — was previously
+    // static; the hero is the first thing seen on load so it's the highest-
+    // value spot for a smooth entrance.
+    const content = createElement('div', { className: 'hero__content container enter-rise' });
     if (media.logoUrl) {
       content.append(createElement('img', { className: 'hero__logo', attrs: { src: media.logoUrl, alt: media.title } }));
     } else {
