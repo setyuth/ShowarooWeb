@@ -9,20 +9,28 @@ import { createElement } from '../utils/dom.js';
 import { debounce } from '../utils/async.js';
 
 /**
- * Google's official Play Store badge asset (their brand kit — meant to be
- * embedded as-is on external sites, not restyled). Using the real asset
- * instead of a custom pill avoids both the trademark question and the
- * "doesn't look like a real store badge" problem.
+ * ShowAroo's own Play Store icon — pulled from the live listing's own CDN
+ * path, not a shared Google badge asset. Used both as the site's brand logo
+ * (per request) and as the icon in the "Get the app" badge below. `=s128`
+ * requests a 128px square from Google's image proxy; markup displays it
+ * smaller and lets the browser downscale for crispness on retina.
  */
-export const PLAY_BADGE_SRC =
-  'https://play.google.com/intl/en_us/badges/static/images/badges/en-us_badge_web_generic.png';
+export const APP_ICON_SRC =
+  'https://play-lh.googleusercontent.com/hPsXT3DYQvYC1QIAmaZsDx0TpgXXLIy5pNgBnX0otdJnXbyrQbQlzIFvVYkVTq8rZ3buCxzw64VY69wAUuKjgA=s128';
+
+export const PLAY_STORE_URL =
+  'https://play.google.com/store/apps/details?id=com.personallifeinsights.showarooapp';
 
 /**
- * Primary navigation model. Single source so desktop + mobile stay in sync.
- * Items with `external: true` link off-app (e.g. app-store listings) and
- * carry `href` instead of `path` — both Header and MobileNav render these
- * as real anchors with target="_blank", never through onNavigate()/
- * router.navigate(), since there's no in-app route to go to.
+ * Primary navigation model. Single source so desktop + mobile + footer stay
+ * in sync. Items with `external: true` link off-app (e.g. app-store
+ * listings) and carry `href` instead of `path` — every consumer (Header,
+ * MobileNav, Footer) MUST special-case `item.external` and render a plain
+ * anchor, never through onNavigate()/router.navigate(): there's no in-app
+ * route to go to, and passing `item.path` (undefined) into onNavigate()
+ * throws inside Router.navigate() (see Footer.js fix, history: this exact
+ * bug shipped once already because Footer.js hadn't been updated to match
+ * Header.js/MobileNav.js when this item was added).
  */
 export const NAV_ITEMS = Object.freeze([
   { id: 'home', label: 'Home', path: '/', icon: 'home' },
@@ -34,9 +42,7 @@ export const NAV_ITEMS = Object.freeze([
     id: 'android-app',
     label: 'Get ShowAroo on Google Play',
     external: true,
-    href: 'https://play.google.com/store/apps/details?id=com.personallifeinsights.showarooapp',
-    // Rendered as the official Play Store badge image, not a text link —
-    // see #androidBadge() in Header and MobileNav.
+    href: PLAY_STORE_URL,
   },
 ]);
 
@@ -56,19 +62,19 @@ export class Header extends Component {
     const header = createElement('header', { className: 'app-header', attrs: { role: 'banner' } });
     const inner = createElement('div', { className: 'app-header__inner container' });
 
-    // Brand: logo mark (inline SVG, no external asset) + wordmark.
+    // Brand: app icon + wordmark.
     const brand = createElement('a', {
       className: 'app-header__brand',
       attrs: { href: '#/', 'aria-label': 'ShowAroo home' },
     });
-    brand.append(this.#logoMark(), createElement('span', { className: 'app-header__brand-word', text: 'ShowAroo' }));
+    brand.append(this.#logoImg(), createElement('span', { className: 'app-header__brand-word', text: 'ShowAroo' }));
     this.on(brand, 'click', (e) => { e.preventDefault(); onNavigate('/'); });
 
     // Primary nav.
     const nav = createElement('nav', { className: 'app-header__nav', attrs: { 'aria-label': 'Primary' } });
     for (const item of NAV_ITEMS) {
       if (item.external) {
-        nav.append(this.#androidBadge(item, 'app-header__playbadge'));
+        nav.append(this.#androidBadge(item));
         continue;
       }
 
@@ -99,58 +105,40 @@ export class Header extends Component {
   }
 
   /**
-   * Real Google Play badge, wrapped in a plain anchor. Shared shape used by
-   * both Header and MobileNav so the two never drift apart visually.
+   * "Get the app" badge: real app icon + two-line text. Built from markup
+   * (not a hotlinked store-badge image), so it can't go blank the way a
+   * third-party-hosted PNG can. Shared shape reused by MobileNav's compact
+   * variant would duplicate DOM structure unnecessarily, so MobileNav
+   * renders its own simpler icon+label item instead.
    * @param {typeof NAV_ITEMS[number]} item
-   * @param {string} wrapperClassName
    * @returns {HTMLElement}
    */
-  #androidBadge(item, wrapperClassName) {
+  #androidBadge(item) {
     const link = createElement('a', {
-      className: wrapperClassName,
-      attrs: {
-        href: item.href,
-        target: '_blank',
-        rel: 'noopener noreferrer',
-        'aria-label': item.label,
-      },
+      className: 'app-header__playbadge',
+      attrs: { href: item.href, target: '_blank', rel: 'noopener noreferrer', 'aria-label': item.label },
     });
     link.append(createElement('img', {
-      className: `${wrapperClassName}-img`,
-      attrs: {
-        src: PLAY_BADGE_SRC, alt: 'Get it on Google Play',
-        loading: 'lazy', width: '135', height: '40',
-      },
+      className: 'app-header__playbadge-icon',
+      attrs: { src: APP_ICON_SRC, alt: '', loading: 'lazy', width: '28', height: '28' },
     }));
+    const text = createElement('span', { className: 'app-header__playbadge-text' });
+    text.append(createElement('span', { className: 'app-header__playbadge-eyebrow', text: 'GET IT ON' }));
+    text.append(createElement('span', { className: 'app-header__playbadge-brand', text: 'Google Play' }));
+    link.append(text);
     return link;
   }
 
   /**
-   * Inline SVG logo mark: a rounded gradient badge with a play glyph. No
-   * external image asset required; colors are theme tokens, so it stays in
-   * sync with the design system automatically. Swap this for an <img> if a
-   * real brand asset exists later.
-   * @returns {SVGSVGElement}
+   * Brand logo: the app's real Play Store icon. Replaces the previous
+   * inline-SVG placeholder mark now that a real brand asset exists.
+   * @returns {HTMLImageElement}
    */
-  #logoMark() {
-    const ns = 'http://www.w3.org/2000/svg';
-    const svg = document.createElementNS(ns, 'svg');
-    svg.setAttribute('viewBox', '0 0 40 40');
-    svg.setAttribute('width', '32');
-    svg.setAttribute('height', '32');
-    svg.setAttribute('aria-hidden', 'true');
-    svg.setAttribute('class', 'app-header__logo-mark');
-    svg.innerHTML = `
-      <defs>
-        <linearGradient id="showaroo-logo-grad" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stop-color="var(--color-primary)"/>
-          <stop offset="1" stop-color="var(--color-accent, var(--color-primary))"/>
-        </linearGradient>
-      </defs>
-      <rect width="40" height="40" rx="11" fill="url(#showaroo-logo-grad)"/>
-      <path d="M16 12.5 L28 20 L16 27.5 Z" fill="var(--color-bg)"/>
-    `;
-    return /** @type {SVGSVGElement} */ (svg);
+  #logoImg() {
+    return /** @type {HTMLImageElement} */ (createElement('img', {
+      className: 'app-header__logo-mark',
+      attrs: { src: APP_ICON_SRC, alt: '', width: '32', height: '32', loading: 'eager', decoding: 'async' },
+    }));
   }
 
   /**

@@ -35,6 +35,22 @@ export class Footer extends Component {
     const exploreList = createElement('ul', { className: 'app-footer__links' });
     for (const item of NAV_ITEMS) {
       const li = createElement('li');
+
+      if (item.external) {
+        // Real external link — must NOT go through onNavigate()/router, since
+        // item.path is undefined for external items (this previously threw
+        // in Router.navigate() when clicked: onNavigate(undefined) ->
+        // path.startsWith(...) on undefined). Header.js/MobileNav.js already
+        // special-cased this; this loop hadn't been updated to match.
+        const extLink = createElement('a', {
+          className: 'app-footer__link--external', text: item.label,
+          attrs: { href: item.href, target: '_blank', rel: 'noopener noreferrer' },
+        });
+        li.append(extLink);
+        exploreList.append(li);
+        continue;
+      }
+
       const link = createElement('a', { text: item.label, attrs: { href: `#${item.path}` } });
       this.on(link, 'click', (e) => { e.preventDefault(); onNavigate(item.path); });
       li.append(link);
