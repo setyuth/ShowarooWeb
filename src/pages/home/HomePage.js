@@ -46,12 +46,15 @@ export class HomePage extends Page {
     slot.replaceChildren(new Skeleton({ shape: 'rect', height: '60vh' }).render());
     const trending = await this.#deps.movie.trending();
     if (!trending.ok || trending.value.items.length === 0) { slot.replaceChildren(); return; }
-    // Spotlight the top trending item; fetch its detail for overview + backdrop logo.
-    const top = trending.value.items[0];
-    const detail = await this.#deps.movie.detail(top.id);
-    const media = detail.ok ? detail.value : top;
+    // Spotlight the top few trending items; fetch each detail in parallel for
+    // overview + backdrop logo. Capped at 5 to keep the hero snappy and avoid
+    // hammering the API on every homepage load.
+    const spotlightCount = Math.min(5, trending.value.items.length);
+    const candidates = trending.value.items.slice(0, spotlightCount);
+    const details = await Promise.all(candidates.map((item) => this.#deps.movie.detail(item.id)));
+    const items = details.map((detail, i) => (detail.ok ? detail.value : candidates[i]));
     slot.replaceChildren(new Hero({
-      media,
+      items,
       onPlay: (id, type) => this.#deps.router.navigate(`/watch/${type}/${id}`),
       onDetails: (id, type) => this.#deps.router.navigate(`/${type}/${id}`),
     }).render());

@@ -160,6 +160,12 @@
   .app-header__playbadge-text { display: none; }
   .app-header__playbadge { padding: var(--space-1); }
 }
+/* Footer reuses the same badge markup/classes (see Footer.js#playBadge) but
+   sits in its own full-width column, not squeezed against a search box like
+   the header is — so the header's under-900px "icon-only" collapse doesn't
+   apply here. Higher-specificity selectors win regardless of source order. */
+.app-footer__playbadge.app-footer__playbadge { padding: var(--space-2) var(--space-3); }
+.app-footer__playbadge .app-header__playbadge-text { display: flex; }
 
 /* Bottom nav: identical icon+label shape every other item already uses —
    no more forcing a wide store-badge image into a 56px-tall flex slot. */

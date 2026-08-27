@@ -27,7 +27,7 @@ export class Footer extends Component {
     const brandMark = createElement('div', { className: 'app-footer__brand' });
     brandMark.append(createElement('img', {
       className: 'app-footer__logo-mark',
-      attrs: { src: APP_ICON_SRC, alt: '', width: '28', height: '28', loading: 'lazy', decoding: 'async' },
+      attrs: { src: APP_ICON_SRC, alt: '', width: '40', height: '40', loading: 'lazy', decoding: 'async' },
     }));
     brandMark.append(createElement('span', { className: 'app-footer__brand-word', text: 'ShowAroo' }));
     brandCol.append(brandMark);

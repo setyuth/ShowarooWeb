@@ -106,7 +106,11 @@
   padding-bottom: var(--space-6);
 }
 .app-footer__col--brand { max-width: 32ch; }
-.app-footer__brand {
+.app-footer__brand { display: flex; align-items: center; gap: var(--space-2); }
+.app-footer__logo-mark {
+  flex: 0 0 auto; width: 40px; height: 40px; border-radius: var(--radius-md); object-fit: cover;
+}
+.app-footer__brand-word {
   font-weight: var(--font-weight-bold); font-size: var(--font-size-h4);
   background: linear-gradient(135deg, var(--color-primary), var(--color-accent, var(--color-primary)));
   -webkit-background-clip: text; background-clip: text; color: transparent;
@@ -116,6 +120,7 @@
 .app-footer__links { display: flex; flex-direction: column; gap: var(--space-2); list-style: none; padding: 0; margin: 0; }
 .app-footer__links a { color: var(--color-text-muted); transition: color var(--duration-base) var(--ease-standard); }
 .app-footer__links a:hover { color: var(--color-text); }
+.app-footer__links-item--badge { margin-top: var(--space-1); }
 .app-footer__bottom { border-top: 1px solid var(--surface-1); padding-top: var(--space-4); }
 .app-footer__attr { color: var(--color-text-muted); font-size: var(--font-size-sm); }
 
