@@ -1,7 +1,18 @@
 /* Homepage: hero + rails. Token-driven, responsive, reduced-motion safe. */
 .home__hero { margin-bottom: var(--space-6); }
 
-.hero { position: relative; min-height: 60vh; display: flex; align-items: flex-end; overflow: hidden; border-radius: 0 0 var(--radius-xl) var(--radius-xl); }
+.hero {
+  position: relative; height: 60vh; min-height: 420px;
+  overflow: hidden; border-radius: 0 0 var(--radius-xl) var(--radius-xl);
+}
+.hero__track { position: relative; width: 100%; height: 100%; }
+.hero__slide {
+  position: absolute; inset: 0;
+  display: flex; align-items: flex-end;
+  opacity: 0; visibility: hidden; pointer-events: none;
+  transition: opacity 700ms var(--ease-standard);
+}
+.hero__slide.is-active { opacity: 1; visibility: visible; pointer-events: auto; }
 
 /* .hero__backdrop { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; } */
 .hero__backdrop { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; animation: mo-kenburns 18s var(--ease-standard) both; }
@@ -14,6 +25,21 @@
 .hero__meta { color: var(--color-text-secondary); margin-top: var(--space-2); }
 .hero__overview { color: var(--color-text-secondary); margin-top: var(--space-3); }
 .hero__actions { display: flex; gap: var(--space-3); margin-top: var(--space-4); flex-wrap: wrap; }
+
+.hero__dots {
+  position: absolute; bottom: var(--space-4); left: 50%; transform: translateX(-50%); z-index: 2;
+  display: flex; gap: var(--space-2);
+}
+.hero__dot {
+  width: 10px; height: 10px; border-radius: var(--radius-pill); border: none; padding: 0;
+  background: rgba(255, 255, 255, .35); cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-standard), transform var(--duration-fast) var(--ease-standard);
+}
+.hero__dot:hover { background: rgba(255, 255, 255, .6); }
+.hero__dot.is-active { background: #fff; transform: scale(1.2); }
+.hero__dot:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring); outline-offset: var(--focus-ring-offset);
+}
 
 .rail { margin-bottom: var(--space-6); }
 .rail__head { margin-bottom: var(--space-3); }

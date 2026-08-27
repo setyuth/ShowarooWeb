@@ -44,20 +44,49 @@ export class HomePage extends Page {
   /** @param {HTMLElement} slot */
   async #loadHero(slot) {
     slot.replaceChildren(new Skeleton({ shape: 'rect', height: '60vh' }).render());
-    const trending = await this.#deps.movie.trending();
-    if (!trending.ok || trending.value.items.length === 0) { slot.replaceChildren(); return; }
-    // Spotlight the top few trending items; fetch each detail in parallel for
-    // overview + backdrop logo. Capped at 5 to keep the hero snappy and avoid
-    // hammering the API on every homepage load.
-    const spotlightCount = Math.min(5, trending.value.items.length);
-    const candidates = trending.value.items.slice(0, spotlightCount);
-    const details = await Promise.all(candidates.map((item) => this.#deps.movie.detail(item.id)));
-    const items = details.map((detail, i) => (detail.ok ? detail.value : candidates[i]));
+    // Pull from both movie and TV trending so the spotlight rotates across
+    // both — previously this only ever queried movies, so TV never showed
+    // up in the hero no matter how trending it was.
+    const [movies, shows] = await Promise.all([
+      this.#deps.movie.trending(),
+      this.#deps.tv.trending(),
+    ]);
+    const movieItems = movies.ok ? movies.value.items : [];
+    const showItems = shows.ok ? shows.value.items : [];
+    const pool = this.#interleave(movieItems, showItems).slice(0, 6);
+    if (pool.length === 0) { slot.replaceChildren(); return; }
+
+    const details = await Promise.all(pool.map((item) => this.#detailFor(item)));
+    const items = details.map((detail, i) => (detail.ok ? detail.value : pool[i]));
     slot.replaceChildren(new Hero({
       items,
       onPlay: (id, type) => this.#deps.router.navigate(`/watch/${type}/${id}`),
       onDetails: (id, type) => this.#deps.router.navigate(`/${type}/${id}`),
     }).render());
+  }
+
+  /**
+   * Fetch detail from whichever repo matches the item's media type.
+   * @param {any} item @returns {Promise<import('../../core/Result.js').Result<any>>}
+   */
+  #detailFor(item) {
+    const repo = item.mediaType === 'tv' ? this.#deps.tv : this.#deps.movie;
+    return repo.detail(item.id);
+  }
+
+  /**
+   * Alternate between two lists so the combined pool isn't all-movies-then-
+   * all-TV — e.g. [m1, t1, m2, t2, m3, t3, m4] if one list runs longer.
+   * @param {any[]} a @param {any[]} b @returns {any[]}
+   */
+  #interleave(a, b) {
+    const out = [];
+    const max = Math.max(a.length, b.length);
+    for (let i = 0; i < max; i += 1) {
+      if (a[i]) out.push(a[i]);
+      if (b[i]) out.push(b[i]);
+    }
+    return out;
   }
 
   /**
