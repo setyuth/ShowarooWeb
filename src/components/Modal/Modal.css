@@ -1,0 +1,59 @@
+/* Modal dialog (DS §16). Fixed-position backdrop + centered dialog, focus-
+   trapping/dismissal handled in Modal.js — this file only owns layout,
+   layering, and the enter transition. Token-driven, reduced-motion safe. */
+
+.ui-modal__backdrop {
+  position: fixed; inset: 0; z-index: var(--z-modal);
+  display: flex; align-items: center; justify-content: center;
+  padding: var(--space-4);
+  background: color-mix(in srgb, black 65%, transparent);
+  backdrop-filter: blur(4px);
+  overflow-y: auto;
+  animation: ui-modal-fade var(--duration-base) var(--ease-standard) both;
+}
+
+.ui-modal {
+  width: 100%; max-width: 720px; max-height: 90vh;
+  display: flex; flex-direction: column;
+  background: var(--surface-1);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--elevation-4);
+  overflow: hidden;
+  animation: ui-modal-rise var(--duration-base) var(--ease-emphasized) both;
+}
+
+.ui-modal__header {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--space-3);
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--surface-2);
+  flex: 0 0 auto;
+}
+.ui-modal__title { font-size: var(--font-size-h4); line-height: var(--line-height-tight); margin: 0; }
+
+.ui-modal__close {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; flex: 0 0 auto;
+  background: transparent; color: var(--color-text-secondary);
+  border: none; border-radius: var(--radius-circle);
+  cursor: pointer; font-size: 1.25rem; line-height: 1;
+  transition: background var(--duration-fast) var(--ease-standard), color var(--duration-fast) var(--ease-standard);
+}
+.ui-modal__close::before { content: '\2715'; } /* ✕ fallback glyph if the [data-icon] sprite/font isn't loaded */
+.ui-modal__close:hover { background: var(--surface-2); color: var(--color-text); }
+.ui-modal__close:focus-visible {
+  outline: var(--focus-ring-width) solid var(--focus-ring); outline-offset: var(--focus-ring-offset);
+}
+
+.ui-modal__body { padding: var(--space-4); overflow-y: auto; flex: 1 1 auto; }
+
+@keyframes ui-modal-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes ui-modal-rise { from { opacity: 0; transform: translateY(16px) scale(.98); } to { opacity: 1; transform: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .ui-modal__backdrop, .ui-modal { animation: none; }
+}
+
+@media (max-width: 639px) {
+  .ui-modal__backdrop { padding: var(--space-2); align-items: flex-end; }
+  .ui-modal { max-height: 85vh; border-radius: var(--radius-lg) var(--radius-lg) 0 0; }
+}
