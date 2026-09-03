@@ -1,5 +1,5 @@
 /* Homepage: hero + rails. Token-driven, responsive, reduced-motion safe. */
-.home__hero { margin-bottom: var(--space-6); }
+.home__hero { margin-top: calc(var(--space-5) * -1); margin-bottom: var(--space-6); }
 
 .hero {
   position: relative; height: 60vh; min-height: 420px;
