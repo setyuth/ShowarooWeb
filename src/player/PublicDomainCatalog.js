@@ -23,19 +23,9 @@
 // which is more robust to IA re-encoding/renaming files over time.
 
 export const MOVIE_CATALOG = {
-  // Night of the Living Dead (1968, dir. George A. Romero) — TMDB id 10331.
-  // Public Domain Mark 1.0 on IA; published 1968 without a copyright
-  // notice, lapsed under pre-1978 US copyright law.
-  10331: {
-    identifier: 'NightOfTheLivingDead1968-Restored',
-    file: 'Notld1968Restoration-desktop.mp4',
-  },
-  // His Girl Friday (1940, dir. Howard Hawks) — Public Domain Mark 1.0 on IA;
-  // Columbia Pictures let the copyright lapse without renewal.
-  3085: {
-    identifier: 'his-girl-friday-1940_202109',
-    file: 'His Girl Friday (1940).ia.mp4',
-  },
+  10340: { identifier: 'lady-and-the-tramp-1955_202506', file: 'Lady and the Tramp.mp4' },
+  15: { identifier: 'citizen-kane-2004', file: 'Citizen Kane (2004).mp4' },
+  3170: { identifier: 'BambiBlueRainLanaDelReyVs.MobyVs.MadonnaVs.SarahBrightmanVs.EmmaHewitt', file: 'Bambi - Blue Rain (Lana Del Rey vs. Moby vs. Madonna vs. Sarah Brightman vs. Emma Hewitt).mp4' },
 };
 
 export const TV_CATALOG = {
